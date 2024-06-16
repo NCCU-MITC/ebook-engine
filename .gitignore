@@ -1,0 +1,5 @@
+__pycache__
+ebook
+.env
+epub
+*.db

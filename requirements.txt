@@ -1,0 +1,7 @@
+fastapi
+pydantic
+Scrapy
+python-dotenv
+certifi
+google-books-api-wrapper
+elasticsearch
