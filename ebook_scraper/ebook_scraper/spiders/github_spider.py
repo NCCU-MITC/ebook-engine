@@ -10,7 +10,7 @@ from ebook_scraper.items import EbookItem
 class GithubSpider(scrapy.Spider):
     name = 'github_spider'
 
-    def __init__(self, username=None, repo=None, *args, **kwargs):
+    def __init__(self, username="fancy88", repo="iBook", *args, **kwargs):
         super(GithubSpider, self).__init__(*args, **kwargs)
         load_dotenv()
         token = os.getenv("GITHUB_TOKEN")
@@ -43,6 +43,7 @@ class GithubSpider(scrapy.Spider):
                 if file['name'].endswith('.epub'):
                     # 獲取文件的URL
                     url = file['download_url']
+                    # 將文件URL傳遞給save_epub方法
                     yield scrapy.Request(url, callback=self.save_epub, meta={'file_info': file})
 
     def save_epub(self, response):
@@ -58,10 +59,11 @@ class GithubSpider(scrapy.Spider):
         else:
             os.makedirs(self.epub_save_path, exist_ok=True)
             # 將文件保存到本地
-            file_path = os.path.join(self.epub_save_path, filename)
-            with open(file_path, 'wb') as f:
-                f.write(response.body)
-            self.log(f'Saved file {filename}')
+            # file_path = os.path.join(self.epub_save_path, filename)
+            # with open(file_path, 'wb') as f:
+            #     f.write(response.body)
+            # self.log(f'Saved file {filename}')
+            self.log("Success")
             return self.save_to_db(response)
 
     def save_to_db(self, response):

@@ -2,7 +2,10 @@
 ```
 scrapy crawl github_spider
 ```
-因為google cse需要js渲染內容
+
+# github_spider
+目前需要使用者提供要爬取的github repo name才可以進行爬取，畢竟github本來就不是做電子書的，後續有更好的方法在另外加上去
+
 
 
 Scrapy 爬蟲類 (Spider) 提供了多種常見的方法,您可以根據需求使用它們來實現各種爬取功能。以下是一些常用的方法:

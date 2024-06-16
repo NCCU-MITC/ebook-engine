@@ -14,7 +14,7 @@ import sqlite3
 class SQLitePipeline(object):
 
     def open_spider(self, spider):
-        self.connection = sqlite3.connect('ebook.db')
+        self.connection = sqlite3.connect('../ebook.db')
         self.c = self.connection.cursor()
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS eBook (
