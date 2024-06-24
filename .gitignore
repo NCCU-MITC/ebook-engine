@@ -1,5 +1,5 @@
 __pycache__
-ebook
 .env
 epub
-*.db
+.venv
+ebook
