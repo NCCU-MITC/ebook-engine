@@ -1,6 +1,6 @@
 from fastapi import FastAPI, BackgroundTasks
 import sqlite3
-from elasticsearch import Elasticsearch
+# from elasticsearch import Elasticsearch
 
 
 app = FastAPI()

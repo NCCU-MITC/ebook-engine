@@ -37,6 +37,9 @@ source該電子書來源於哪一個平台的資料，可以用來做filter
 
 
 # 使用說明
+```
+source .venv/bin/activate
+```
 爬蟲已經事先爬好並將資料儲存到ebook.db，直接運行main.py開啟server即可
 可以使用以下API來測試搜尋
 ```
@@ -47,3 +50,4 @@ source該電子書來源於哪一個平台的資料，可以用來做filter
 ```
 scrapy crawl <spider_name>
 ```
+

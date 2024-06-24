@@ -10,7 +10,9 @@ from ebook_scraper.items import EbookItem
 class GithubSpider(scrapy.Spider):
     name = 'github_spider'
 
-    def __init__(self, username="fancy88", repo="iBook", *args, **kwargs):
+    # fancy88/iBook
+    # it-ebooks-0/it-ebooks-2022
+    def __init__(self, username="it-ebooks-0", repo="it-ebooks-2022", *args, **kwargs):
         super(GithubSpider, self).__init__(*args, **kwargs)
         load_dotenv()
         token = os.getenv("GITHUB_TOKEN")
