@@ -1,3 +1,9 @@
+# 安裝說明（建議使用虛擬環境）
+```
+pip install -r requirements.txt
+```
+
+
 # Github Token
 - 可以在設定>開發人員>創建personal access token，放入`local.env`，並將其改名為`.env`即可
 
@@ -41,6 +47,10 @@ source該電子書來源於哪一個平台的資料，可以用來做filter
 source .venv/bin/activate
 ```
 爬蟲已經事先爬好並將資料儲存到ebook.db，直接運行main.py開啟server即可
+開啟後端Server
+```
+python main.py
+```
 可以使用以下API來測試搜尋
 ```
 127.0.0.1:8000/search?query=0

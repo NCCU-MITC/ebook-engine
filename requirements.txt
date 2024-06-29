@@ -3,4 +3,4 @@ pydantic
 Scrapy
 python-dotenv
 certifi
-google-books-api-wrapper
+# google-books-api-wrapper
