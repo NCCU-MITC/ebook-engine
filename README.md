@@ -51,6 +51,9 @@ source .venv/bin/activate
 ```
 python main.py
 ```
+查看swagger文件
+127.0.0.1:8000/docs
+
 可以使用以下API來測試搜尋
 ```
 127.0.0.1:8000/search?query=0
