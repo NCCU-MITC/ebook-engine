@@ -63,4 +63,9 @@ python main.py
 ```
 scrapy crawl <spider_name>
 ```
-
+# Gradio
+如果要使用 Gradio 版本的介面，跟上面一樣使用虛擬環境後，執行
+```
+python main_gradio.py
+```
+並且到 http://127.0.0.1:7860 測試即可

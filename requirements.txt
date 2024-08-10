@@ -3,4 +3,7 @@ pydantic
 Scrapy
 python-dotenv
 certifi
+uvicorn
+gradio
+opencc-python-reimplemented
 # google-books-api-wrapper
