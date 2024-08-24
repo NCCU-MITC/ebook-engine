@@ -39,7 +39,8 @@ env:
   REGION: "us-central1" # TODO: update to your region
   # 需要事先建立Artifact Registry
   SERVICE: 'ebook-engine' # TODO: update to your service name
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/677814715221/locations/global/workloadIdentityPools/my-pool/providers/github' #${{ secrets.SECRET_GCP_WORKLOAD_IDENTITY_PROVIDER }} # TODO: update to your workload identity provider
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.SECRET_GCP_WORKLOAD_IDENTITY_PROVIDER }} # TODO: update to your workload identity provider
+  IMAGE_NAME: 'ebook-engine' # TODO: update to your image name
 
 jobs:
   deploy:
@@ -93,8 +94,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
-            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:latest
 
       
       - name: 'Deploy to Cloud Run'
