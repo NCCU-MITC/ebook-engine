@@ -26,4 +26,4 @@ EXPOSE 8080
 # ENV DB_PASSWORD=${DB_PASSWORD}
 
 # 啟動 FastAPI 伺服器
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
