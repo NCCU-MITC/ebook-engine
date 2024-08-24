@@ -1,4 +1,4 @@
-name: Docker-GCP-CI-CD
+name: Build and Deploy to Cloud Run
 on:
   push:
     branches:
@@ -9,103 +9,122 @@ on:
 env:
   REGION: us-central1
   REPONAME: ebook-engine
+  SERVICE: ebook-engine
+  PROJECT_ID: mitc-ebook 
+  # PROVIDER:
   IMAGE_NAME: ebook-engine
-  SERVICE_NAME: ebook-engine
+  
 
 
 jobs:
-  docker-release:
-    name: Build and Deploy FastAPI Container to Google App Engine
-    runs-on: ubuntu-latest
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')  # <-- Notice that I'm filtering here to only run when a tagged commit is pushed
+  deploy:
+    runs-on: 'ubuntu-latest'
 
     permissions:
       contents: 'read'
       id-token: 'write'
 
     steps:
-      - id: checkout
-        name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - id: auth
         name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
-          token_format: access_token
           workload_identity_provider: ${{ secrets.SECRET_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          
+          
           service_account: ${{ secrets.SECRET_GCP_SERVICE_ACCOUNT }}
           project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
           access_token_lifetime: 300s
 
-      - name: Login to Artifact Registry
-        uses: docker/login-action@v1
+      - name: Docker Auth
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGION }}-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
-      - name: Get tag
-        id: get-tag
-        run: echo "short_ref=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      # 要先啟用 Google App Engine Admin API
-      - id: docker-push-tagged
-        name: Tag Docker image and push to Google Artifact Registry
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: |
-            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
-            ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:latest
-          # build-args: |
-          #   DB_USER=${{ secrets.SECRET_DB_USER }}
-          #   DB_PASS=${{ secrets.SECRET_DB_PASS }}
-          #   DB_HOST=${{ secrets.SECRET_DB_HOST }}
-          #   DB_NAME=${{ secrets.SECRET_DB_NAME }}
+      - name: 'Build and Push Container'
+        run: |-
+          DOCKER_TAG="$${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          docker build --tag "${DOCKER_TAG}" .
+          docker push "${DOCKER_TAG}"
       
-      # 部署 Docker 映像到 Google App Engine
-      # - id: deploy
-      #   name: Deploy Docker image to App Engine
-      #   uses: google-github-actions/deploy-appengine@v1
+      - name: 'Deploy to Cloud Run'
+
+        # END - Docker auth and build
+
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: '${{ env.SERVICE }}'
+          region: '${{ env.REGION }}'
+          # NOTE: If using a pre-built image, update the image name below:
+
+          image: '${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}'
+      # If required, use the Cloud Run URL output in later steps
+      - name: 'Show output'
+        run: |2-
+
+          echo ${{ steps.deploy.outputs.url }}
+      
+
+      # # 要先啟用 Google App Engine Admin API
+      # - id: docker-push-tagged
+      #   name: Tag Docker image and push to Google Artifact Registry
+      #   uses: docker/build-push-action@v2
       #   with:
-      #     project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
-      #     working_directory: '.github/configs/'
-      #     deliverables: 'app.yaml'
+      #     push: true
+      #     tags: |
+      #       ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+      #       ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:latest
+      #     # build-args: |
+      #     #   DB_USER=${{ secrets.SECRET_DB_USER }}
+      #     #   DB_PASS=${{ secrets.SECRET_DB_PASS }}
+      #     #   DB_HOST=${{ secrets.SECRET_DB_HOST }}
+      #     #   DB_NAME=${{ secrets.SECRET_DB_NAME }}
+      
+      # # 部署 Docker 映像到 Google App Engine
+      # # - id: deploy
+      # #   name: Deploy Docker image to App Engine
+      # #   uses: google-github-actions/deploy-appengine@v1
+      # #   with:
+      # #     project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
+      # #     working_directory: '.github/configs/'
+      # #     deliverables: 'app.yaml'
           
-      #     image_url: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
-      #     promote: true
+      # #     image_url: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+      # #     promote: true
       
-      # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
-      - id: populate-configs
-        uses: 73h/gae-app-yaml-replace-env-variables@v0.3
-        env:
-          # SECRET_AUTH_URL: ${{ secrets.SECRET_AUTH_URL }}
-          SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
-          SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
-          SECRET_DB_PORT: ${{ secrets.SECRET_DB_PORT }}
-          SECRET_DB_NAME: ${{ secrets.SECRET_DB_NAME }}
-          SECRET_DB_HOST: ${{ secrets.SECRET_DB_HOST }}
-          # SECRET_INSTANCE_UNIX_SOCKET: ${{ secrets.SECRET_INSTANCE_UNIX_SOCKET }}
-          # SECRET_CLOUD_SQL_INSTANCE: ${{ secrets.SECRET_CLOUD_SQL_INSTANCE }}
-          # SECRET_SERVICE_API_KEY: ${{ secrets.SECRET_SERVICE_API_KEY }}
-        # with:
-        #   app_yaml_path: ".github/configs/app.yaml"
+      # # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
+      # # - id: populate-configs
+      # #   uses: 73h/gae-app-yaml-replace-env-variables@v0.3
+      # #   env:
+      # #     # SECRET_AUTH_URL: ${{ secrets.SECRET_AUTH_URL }}
+      # #     SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
+      # #     SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
+      # #     SECRET_DB_PORT: ${{ secrets.SECRET_DB_PORT }}
+      # #     SECRET_DB_NAME: ${{ secrets.SECRET_DB_NAME }}
+      # #     SECRET_DB_HOST: ${{ secrets.SECRET_DB_HOST }}
+      #     # SECRET_INSTANCE_UNIX_SOCKET: ${{ secrets.SECRET_INSTANCE_UNIX_SOCKET }}
+      #     # SECRET_CLOUD_SQL_INSTANCE: ${{ secrets.SECRET_CLOUD_SQL_INSTANCE }}
+      #     # SECRET_SERVICE_API_KEY: ${{ secrets.SECRET_SERVICE_API_KEY }}
 
-      # 將處理後的 YAML 文件部署到 Google App Engine。
+      # # 將處理後的 YAML 文件部署到 Google App Engine。
+      # # - id: deploy
+      # #   name: Deploy Docker image to App Engine
+      # #   uses: google-github-actions/deploy-appengine@v1
+      # #   with:
+      # #     working_directory: '.github/configs/'
+      # #     deliverables: 'app.yaml'
+
       # - id: deploy
-      #   name: Deploy Docker image to App Engine
-      #   uses: google-github-actions/deploy-appengine@v1
+      #   name: Deploy Docker image to Google Cloud Run
+      #   uses: google-github-actions/deploy-cloudrun@v1
       #   with:
-      #     working_directory: '.github/configs/'
-      #     deliverables: 'app.yaml'
-
-      - id: deploy
-        name: Deploy Docker image to Google Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          service: ${{ env.SERVICE_NAME }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
-          project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
-          region: ${{ env.REGION }}
-          allow_unauthenticated: true  # 根據需要設置是否允許未經身份驗證的訪問
+      #     service: ${{ env.SERVICE }}
+      #     image: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+      #     project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
+      #     region: ${{ env.REGION }}
+      #     allow_unauthenticated: true  # 根據需要設置是否允許未經身份驗證的訪問
