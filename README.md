@@ -41,7 +41,6 @@ date該電子書的出版日期，如果沒有那就以今天為date
 describe該電子書的簡介，可以被用來搜尋
 source該電子書來源於哪一個平台的資料，可以用來做filter
 
-
 # 使用說明
 ```
 source .venv/bin/activate
