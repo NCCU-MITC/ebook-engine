@@ -50,6 +50,7 @@ jobs:
         id: get-tag
         run: echo "short_ref=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
+      # 要先啟用 Google App Engine Admin API
       - id: docker-push-tagged
         name: Tag Docker image and push to Google Artifact Registry
         uses: docker/build-push-action@v2
