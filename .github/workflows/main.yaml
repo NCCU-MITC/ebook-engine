@@ -93,9 +93,19 @@ jobs:
           app_yaml_path: ".github/configs/app.yaml"
 
       # 將處理後的 YAML 文件部署到 Google App Engine。
+      # - id: deploy
+      #   name: Deploy Docker image to App Engine
+      #   uses: google-github-actions/deploy-appengine@v1
+      #   with:
+      #     working_directory: '.github/configs/'
+      #     deliverables: 'app.yaml'
+
       - id: deploy
-        name: Deploy Docker image to App Engine
-        uses: google-github-actions/deploy-appengine@v1
+        name: Deploy Docker image to Google Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
-          working_directory: '.github/configs/'
-          deliverables: 'app.yaml'
+          service: ${{ env.SERVICE_NAME }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+          project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
+          region: ${{ env.REGION }}
+          allow_unauthenticated: true  # 根據需要設置是否允許未經身份驗證的訪問
