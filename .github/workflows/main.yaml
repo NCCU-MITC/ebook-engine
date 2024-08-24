@@ -14,7 +14,6 @@ env:
   SERVICE_NAME: your-service-name
   IMAGE_NAME: ebook-engine
 
-
 jobs:
   docker-release:
     name: Build and Deploy FastAPI Container to Google App Engine
