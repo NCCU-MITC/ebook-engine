@@ -44,7 +44,7 @@ jobs:
         with:
           registry: ${{ env.REGION }}-docker.pkg.dev
           username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
+          password: ${{ steps.auth.outputs.auth_token }}
 
       - name: 'Build and Push Container'
         run: |-
