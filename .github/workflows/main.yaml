@@ -58,43 +58,44 @@ jobs:
           tags: |
             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:latest
-          build-args: |
-            DB_USER=${{ secrets.SECRET_DB_USER }}
-            DB_PASS=${{ secrets.SECRET_DB_PASS }}
-            DB_HOST=${{ secrets.SECRET_DB_HOST }}
-            DB_NAME=${{ secrets.SECRET_DB_NAME }}
+          # build-args: |
+          #   DB_USER=${{ secrets.SECRET_DB_USER }}
+          #   DB_PASS=${{ secrets.SECRET_DB_PASS }}
+          #   DB_HOST=${{ secrets.SECRET_DB_HOST }}
+          #   DB_NAME=${{ secrets.SECRET_DB_NAME }}
       
       # 部署 Docker 映像到 Google App Engine
-      - id: deploy
-        name: Deploy Docker image to App Engine
-        uses: google-github-actions/deploy-appengine@v1
-        with:
-          project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
-          working_directory: '.github/configs/'
-          deliverables: 'app.yaml'
-          
-          image_url: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
-          promote: true
-      
-      # # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
-      # - id: populate-configs
-      #   uses: 73h/gae-app-yaml-replace-env-variables@v0.3
-      #   env:
-      #     # SECRET_AUTH_URL: ${{ secrets.SECRET_AUTH_URL }}
-      #     SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
-      #     SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
-      #     SECRET_DB_PORT: ${{ secrets.SECRET_DB_PORT }}
-      #     SECRET_DB_NAME: ${{ secrets.SECRET_DB_NAME }}
-      #     SECRET_DB_HOST: ${{ secrets.SECRET_DB_HOST }}
-      #     # SECRET_INSTANCE_UNIX_SOCKET: ${{ secrets.SECRET_INSTANCE_UNIX_SOCKET }}
-      #     # SECRET_CLOUD_SQL_INSTANCE: ${{ secrets.SECRET_CLOUD_SQL_INSTANCE }}
-      #     # SECRET_SERVICE_API_KEY: ${{ secrets.SECRET_SERVICE_API_KEY }}
-      #   with:
-      #     app_yaml_path: ".github/configs/app.yaml"
-
-      # # 將處理後的 YAML 文件部署到 Google App Engine。
       # - id: deploy
       #   name: Deploy Docker image to App Engine
       #   uses: google-github-actions/deploy-appengine@v1
       #   with:
-      #     deliverables: '.github/configs/app.yaml'
+      #     project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
+      #     working_directory: '.github/configs/'
+      #     deliverables: 'app.yaml'
+          
+      #     image_url: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+      #     promote: true
+      
+      # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
+      - id: populate-configs
+        uses: 73h/gae-app-yaml-replace-env-variables@v0.3
+        env:
+          # SECRET_AUTH_URL: ${{ secrets.SECRET_AUTH_URL }}
+          SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
+          SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
+          SECRET_DB_PORT: ${{ secrets.SECRET_DB_PORT }}
+          SECRET_DB_NAME: ${{ secrets.SECRET_DB_NAME }}
+          SECRET_DB_HOST: ${{ secrets.SECRET_DB_HOST }}
+          # SECRET_INSTANCE_UNIX_SOCKET: ${{ secrets.SECRET_INSTANCE_UNIX_SOCKET }}
+          # SECRET_CLOUD_SQL_INSTANCE: ${{ secrets.SECRET_CLOUD_SQL_INSTANCE }}
+          # SECRET_SERVICE_API_KEY: ${{ secrets.SECRET_SERVICE_API_KEY }}
+        with:
+          app_yaml_path: ".github/configs/app.yaml"
+
+      # 將處理後的 YAML 文件部署到 Google App Engine。
+      - id: deploy
+        name: Deploy Docker image to App Engine
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          working_directory: '.github/configs/'
+          deliverables: 'app.yaml'
