@@ -1,14 +1,18 @@
 runtime: python
-env: flex
+env: standard
 
 network:
   forwarded_ports:
     - 80:8000
 
 runtime_config:
-    operating_system: "ubuntu22"
     runtime_version: "3.12"
-    
+
+# 設定處理程序
+handlers:
+  - url: /.*
+    script: auto
+
 env_variables:
   DB_USER: $SECRET_DB_USER
   DB_PASS: $SECRET_DB_PASS
@@ -19,5 +23,8 @@ env_variables:
   # SOME_LICENSE_KEY: $SECRET_SOME_LICENSE_KEY
   # SERVICE_API_KEY: $SECRET_SERVICE_API_KEY
 
-# beta_settings:
-#   cloud_sql_instances: 'CLOUD_SQL_CONNECTION_STRING'
+beta_settings:
+  cloud_sql_instances: 'mitc-ebook:us-central1:ebook-database'
+
+# 設定入口點
+entrypoint: gunicorn -b :$PORT main:app
