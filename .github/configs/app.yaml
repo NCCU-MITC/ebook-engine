@@ -1,3 +1,5 @@
+runtime: python310
+env: flex
 
 network:
   forwarded_ports:
