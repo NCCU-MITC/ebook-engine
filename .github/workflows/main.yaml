@@ -39,11 +39,6 @@ jobs:
           project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
           access_token_lifetime: 300s
 
-      # 只有第一次部署時需要創建 App Engine 應用程序。
-      - name: Create App Engine application
-        run: |
-          gcloud app create --project=${{ secrets.SECRET_GCP_PROJECT_ID }} --region=${{ env.REGION }}
-
       - name: Login to Artifact Registry
         uses: docker/login-action@v1
         with:
