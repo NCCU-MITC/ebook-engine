@@ -7,3 +7,5 @@ uvicorn
 gradio
 opencc-python-reimplemented
 # google-books-api-wrapper
+mysql-connector-python
+google-cloud-storage

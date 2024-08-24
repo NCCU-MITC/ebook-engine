@@ -3,3 +3,5 @@ __pycache__
 epub
 .venv
 ebook
+out
+DB/upload_file_to_GCS.py

@@ -1,0 +1,19 @@
+runtime: custom
+env: flex
+
+network:
+  forwarded_ports:
+    - 80:8000
+
+env_variables:
+  DB_USER: $SECRET_DB_USER
+  DB_PASS: $SECRET_DB_PASS
+  DB_PORT: $SECRET_DB_PORT
+  DB_NAME: $SECRET_DB_NAME
+  DB_HOST: $SECRET_DB_HOST
+  # INSTANCE_UNIX_SOCKET: $SECRET_INSTANCE_UNIX_SOCKET
+  # SOME_LICENSE_KEY: $SECRET_SOME_LICENSE_KEY
+  # SERVICE_API_KEY: $SECRET_SERVICE_API_KEY
+
+beta_settings:
+  cloud_sql_instances: 'CLOUD_SQL_CONNECTION_STRING'
