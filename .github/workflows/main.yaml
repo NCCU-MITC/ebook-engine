@@ -48,7 +48,7 @@ jobs:
 
       - name: Get tag
         id: get-tag
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+        run: echo "short_ref=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - id: docker-push-tagged
         name: Tag Docker image and push to Google Artifact Registry
@@ -56,8 +56,8 @@ jobs:
         with:
           push: true
           tags: |
-             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ steps.get-tag.outputs.short_ref }}
-             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+             ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:latest
       # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
       - id: populate-configs
         uses: 73h/gae-app-yaml-replace-env-variables@v0.3
