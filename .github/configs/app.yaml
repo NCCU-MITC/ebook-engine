@@ -6,7 +6,8 @@ network:
     - 80:8000
 
 runtime_config:
-    runtime_version: "3.12"
+  operating_system: "ubuntu22"
+  runtime_version: "3.12"
 
 # 設定處理程序
 handlers:
