@@ -76,11 +76,22 @@ jobs:
           password: '${{ steps.auth.outputs.auth_token }}'
           registry: '${{ env.REGION }}-docker.pkg.dev'
 
-      - name: 'Build and Push Container'
-        run: |-
-          DOCKER_TAG="us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
-          docker build --tag "${DOCKER_TAG}" .
-          docker push "${DOCKER_TAG}"
+      # - name: 'Build and Push Container'
+      #   run: |-
+      #     DOCKER_TAG="us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+      #     docker build --tag "${DOCKER_TAG}" .
+      #     docker push "${DOCKER_TAG}"
+
+      - id: docker-push-tagged
+        name: Tag Docker image and push to Google Artifact Registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:${{ steps.get-tag.outputs.short_ref }}
+             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:latest
+
+      
       - name: 'Deploy to Cloud Run'
 
         # END - Docker auth and build
