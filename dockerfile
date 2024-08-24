@@ -13,14 +13,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 開放端口
-EXPOSE 8000
+EXPOSE 8080
 
 # 接收環境變數
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_NAME
-ARG DB_USER
-ARG DB_PASS
+# ARG DB_HOST
+# ARG DB_PORT
+# ARG DB_NAME
+# ARG DB_USER
+# ARG DB_PASS
 
 # ENV DB_USER=${DB_USER}
 # ENV DB_PASSWORD=${DB_PASSWORD}
