@@ -82,6 +82,10 @@ jobs:
       #     docker build --tag "${DOCKER_TAG}" .
       #     docker push "${DOCKER_TAG}"
 
+      - name: Get tag
+        id: get-tag
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+        
       - id: docker-push-tagged
         name: Tag Docker image and push to Google Artifact Registry
         uses: docker/build-push-action@v2
