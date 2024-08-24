@@ -70,8 +70,9 @@ jobs:
         uses: google-github-actions/deploy-appengine@v1
         with:
           project_id: ${{ secrets.SECRET_GCP_PROJECT_ID }}
-          service: ${{ env.SERVICE_NAME }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
+          deliverables: '.github/configs/app.yaml'
+          working_directory: '.github/configs/'
+          image_url: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.SECRET_GCP_PROJECT_ID }}/${{ env.REPONAME }}/${{ env.IMAGE_NAME }}:${{ env.short_ref }}
           promote: true
       
       # # 從 GitHub Secrets 中提取敏感信息並替換 YAML 配置文件中的變數。
