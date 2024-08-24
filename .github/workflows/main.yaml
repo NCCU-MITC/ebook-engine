@@ -7,12 +7,13 @@ on:
     #   - '*'
 
 env:
-  REGION: us-central1
-  REPONAME: ebook-engine
-  SERVICE: ebook-engine
-  PROJECT_ID: mitc-ebook 
+  REGION: 'us-central1'
+  REPONAME: 'ebook-engine'
+  SERVICE: 'ebook-engine'
+  PROJECT_ID: 'mitc-ebook' 
   # PROVIDER:
-  IMAGE_NAME: ebook-engine
+  IMAGE_NAME: 'ebook-engine'
+
   
 
 
