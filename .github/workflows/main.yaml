@@ -1,8 +1,9 @@
 name: Docker-GCP-CI-CD
 on:
   push:
-  tags:
-    - '*'
+    tags:
+      - '*'
+
 
 env:
   PROJECT_ID: your-project-id
