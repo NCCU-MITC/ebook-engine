@@ -37,7 +37,7 @@ from google.cloud import storage
 
 BUCKET_NAME = 'ebook-mitc-bucket'
 # 初始化 GCP Storage 客戶端
-client = storage.Client()
+client = storage.Client(project='ebook-mitc')
 bucket = client.bucket(BUCKET_NAME)
 
 # 指定要下載的檔案名稱

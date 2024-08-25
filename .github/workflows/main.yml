@@ -120,10 +120,10 @@
 name: Docker-GCP-CI-CD
 on:
   push:
-    branches:
-      - main
-    # tags:
-    #   - '*'
+    # branches:
+    #   - main
+    tags:
+      - '*'
 
 env:
   REGION: us-central1
